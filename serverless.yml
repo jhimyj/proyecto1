@@ -1,0 +1,46 @@
+org: ${env:ORG}
+service: api-files
+
+provider:
+  name: aws
+  runtime: python3.12
+  memorySize: 1024
+  timeout: 29
+  iam:
+    role: ${env:IAM_ROLE_ARN}  
+  environment:
+    S3_BUCKET_NAME : ${sls:stage}-api-files-eco
+      
+
+functions:
+  filesGenerateUrlsPresigned:
+    handler: src/handler.handler_generate_urls
+    events:
+      - http:
+          path: files/generate-urls-presigned
+          method: post
+          cors:
+            origin: '*'  
+            methods: 
+              - POST
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+          
+  
+
+resources:
+  Resources:
+    BucketFiles:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
+        AccessControl: Private
+        VersioningConfiguration:
+          Status: Enabled
+
+    
