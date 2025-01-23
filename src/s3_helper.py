@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 # Inicialización de cliente S3 y variables de entorno
 s3_client = boto3.client('s3')
-bucket_name = os.getenv('BUCKET_NAME')
+bucket_name = os.getenv('S3_BUCKET_NAME')
 
 # Tipos MIME permitidos
 TIPOS_PERMITIDOS = {'image/png', 'image/jpeg', 'image/jpg', 'application/pdf'}
