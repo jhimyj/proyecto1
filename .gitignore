@@ -1,0 +1,15 @@
+# Ignorar archivos de logs
+*.log
+
+# Ignorar directorio de dependencias (npm, pip, etc.)
+node_modules/
+__pycache__/
+*.pyc
+
+# Ignorar archivos de configuración locales
+.env
+.idea
+# Ignorar archivos de compilación
+dist/
+build/
+
