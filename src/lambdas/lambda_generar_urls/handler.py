@@ -1,6 +1,7 @@
 import logging
-from service import generate_presigned_urls
-from response import Response
+from .service import generate_presigned_urls
+
+from src.common.response import Response
 
 # Configurar el logger
 logger = logging.getLogger()
@@ -12,6 +13,18 @@ def handler_generate_urls(event, context):
     """
     try:
         logger.info("Evento recibido: %s", event)
+        sub_user = (
+            event.get('requestContext', {})
+            .get('authorizer', {})
+            .get('claims', {})
+            .get('sub')
+        )
+        if not sub_user:
+            logger.error("El identificador del usuario (sub) no se encontró en los claims.")
+            return Response(
+                status_code=400,
+                message="El identificador del usuario es obligatorio."
+            ).to_dict()
 
         # Validar el cuerpo del evento
         body = event.get('body')

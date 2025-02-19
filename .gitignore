@@ -13,5 +13,4 @@ __pycache__/
 dist/
 build/
 
-#Ignora test de pruebas locales
-test/
+#Ignora tests de pruebas locales

@@ -1,5 +1,5 @@
 import logging
-from s3_helper import generate_presigned_url
+from .s3_helper import generate_presigned_url
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO)
@@ -37,3 +37,5 @@ def generate_presigned_urls(directory: str, files: list, expiration: int = 3600)
             raise
 
     return structured_urls
+def verify_existence_in_bd(bd_name:str,partition_key:str,ordering_key:str,key_schema:str=None) -> dict:
+    return
