@@ -1,27 +1,31 @@
-org: ${env:ORG}
 service: api-files
+org: ${env:ORG}
 
 provider:
   name: aws
   runtime: python3.12
   memorySize: 1024
   timeout: 29
-  iam:
-    role: ${env:IAM_ROLE_ARN}  
   environment:
-    S3_BUCKET_NAME : ${sls:stage}-api-files-eco
-      
+    COGNITO_USER_POOL_ARN: ${env:COGNITO_USER_POOL_ARN}
+    USER_POOL_ID: ${env:USER_POOL_ID}
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME}
+    RESULT_TABLE: ${env:RESULT_TABLE}
+    SUMMARY_TABLE: ${env:SUMMARY_TABLE}
+    COGNITO_APP_CLIENT_ID: ${env:COGNITO_APP_CLIENT_ID}
+    CONNECTIONS_TABLE: ${env:CONNECTIONS_TABLE}
+
 
 functions:
   filesGenerateUrlsPresigned:
-    handler: src/handler.handler_generate_urls
+    handler: lambda_generar_urls/handler.handler_function
     events:
       - http:
           path: files/generate-urls-presigned
           method: post
           cors:
-            origin: '*'  
-            methods: 
+            origin: '*'
+            methods:
               - POST
             headers:
               - Content-Type
@@ -30,17 +34,122 @@ functions:
               - X-Api-Key
               - X-Amz-Security-Token
               - X-Amz-User-Agent
-          
-  
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+
+  createOperation:
+    handler: lambda_create_operacion/handler.handler_function
+    events:
+      - http:
+          path: operation/create
+          method: post
+          cors:
+            origin: '*'
+            methods:
+              - POST
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+
+  getDataResumen:
+    handler: lambda_get_data_resumen/handler.handler_function
+    events:
+      - http:
+          path: operation/data/{operation}
+          method: get
+          cors:
+            origin: '*'
+            methods:
+              - GET
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+
+  getDatafile:
+    handler: lambda_get_data_file/handler.handler_function
+    events:
+      - http:
+          path: files/data
+          method: get
+          cors:
+            origin: '*'
+            methods:
+              - GET
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+
+  deleteDatafile:
+    handler: lambda_delete_data_file/handler.handler_function
+    events:
+      - http:
+          path: files/data
+          method: delete
+          cors:
+            origin: '*'
+            methods:
+              - DELETE
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: !Ref ApiGatewayAuthorizer
+
+  websocketConnect:
+    handler: lambda_web_socket/handler.connect_handler
+    events:
+      - websocket:
+          route: $connect
+
+  websocketDisconnect:
+    handler: lambda_web_socket/handler.disconnect_handler
+    events:
+      - websocket:
+          route: $disconnect
+
+  websocketAction:
+    handler: lambda_web_socket/handler.action_handler
+    events:
+      - websocket:
+          route: action
+
+
 
 resources:
   Resources:
-    BucketFiles:
-      Type: AWS::S3::Bucket
+    ApiGatewayAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
       Properties:
-        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
-        AccessControl: Private
-        VersioningConfiguration:
-          Status: Enabled
-
-    
+        Name: CognitoAuthorizer
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId: !Ref ApiGatewayRestApi
+        ProviderARNs:
+          - ${self:provider.environment.COGNITO_USER_POOL_ARN}

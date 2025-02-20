@@ -1,0 +1,1968 @@
+{
+  "service": {
+    "service": "api-files",
+    "serviceObject": {
+      "name": "api-files"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.12",
+      "memorySize": 1024,
+      "timeout": 29,
+      "environment": {
+        "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+        "USER_POOL_ID": "us-east-1_LhY2JulLA",
+        "S3_BUCKET_NAME": "mi-bucket-financiero",
+        "RESULT_TABLE": "resultados_archivos_s3_IA",
+        "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+        "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+        "CONNECTIONS_TABLE": "table-connection"
+      },
+      "stage": "dev",
+      "region": "us-east-1",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "FilesGenerateUrlsPresignedLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-filesGenerateUrlsPresigned"
+            }
+          },
+          "CreateOperationLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-createOperation"
+            }
+          },
+          "GetDataResumenLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-getDataResumen"
+            }
+          },
+          "GetDatafileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-getDatafile"
+            }
+          },
+          "DeleteDatafileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-deleteDatafile"
+            }
+          },
+          "WebsocketConnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-websocketConnect"
+            }
+          },
+          "WebsocketDisconnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-websocketDisconnect"
+            }
+          },
+          "WebsocketActionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-files-dev-websocketAction"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "api-files",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api-files-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api-files-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "execute-api:ManageConnections"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:execute-api:*:*:*/@connections/*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "api-files",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "FilesGenerateUrlsPresignedLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_generar_urls/handler.handler_function",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-filesGenerateUrlsPresigned",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "FilesGenerateUrlsPresignedLogGroup"
+            ]
+          },
+          "CreateOperationLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_create_operacion/handler.handler_function",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-createOperation",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateOperationLogGroup"
+            ]
+          },
+          "GetDataResumenLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_get_data_resumen/handler.handler_function",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-getDataResumen",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetDataResumenLogGroup"
+            ]
+          },
+          "GetDatafileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_get_data_file/handler.handler_function",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-getDatafile",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetDatafileLogGroup"
+            ]
+          },
+          "DeleteDatafileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_delete_data_file/handler.handler_function",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-deleteDatafile",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "DeleteDatafileLogGroup"
+            ]
+          },
+          "WebsocketConnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_web_socket/handler.connect_handler",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-websocketConnect",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketConnectLogGroup"
+            ]
+          },
+          "WebsocketDisconnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_web_socket/handler.disconnect_handler",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-websocketDisconnect",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketDisconnectLogGroup"
+            ]
+          },
+          "WebsocketActionLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+                "S3Key": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z/api-files.zip"
+              },
+              "Handler": "lambda_web_socket/handler.action_handler",
+              "Runtime": "python3.12",
+              "FunctionName": "api-files-dev-websocketAction",
+              "MemorySize": 1024,
+              "Timeout": 29,
+              "Environment": {
+                "Variables": {
+                  "COGNITO_USER_POOL_ARN": "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA",
+                  "USER_POOL_ID": "us-east-1_LhY2JulLA",
+                  "S3_BUCKET_NAME": "mi-bucket-financiero",
+                  "RESULT_TABLE": "resultados_archivos_s3_IA",
+                  "SUMMARY_TABLE": "tabla_resumenes_operacion_IA",
+                  "COGNITO_APP_CLIENT_ID": "5mo33gvierbtofg63b9lhu3k65",
+                  "CONNECTIONS_TABLE": "table-connection"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "WebsocketActionLogGroup"
+            ]
+          },
+          "FilesGenerateUrlsPresignedLambdaVersionkWQdmh0tzMsN8RQnPr2gvxIzWbw7J6FWrh3qeS6Y": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "FilesGenerateUrlsPresignedLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "CreateOperationLambdaVersionztnIPOgftIJiIUC6dlmdgiQ7p1pXMGaUOLkHshZ4QWs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateOperationLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "GetDataResumenLambdaVersionM1vTUc3z5MLiX575kl0Ri76liwjVxRNhDBCH5cn0aqY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetDataResumenLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "GetDatafileLambdaVersion7VptbZKksk17AjiwODBxtVmEpJXA4U2eFMSrfSnZU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetDatafileLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "DeleteDatafileLambdaVersionoRcsQYVyyFOeKnIcjxDHHtQC1WaNhYqb1vU9cPP4Eg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteDatafileLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "WebsocketConnectLambdaVersionE6D6Xildmr1oPALhKUCo14t4yswdkKAnhT8DSjeCo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketConnectLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "WebsocketDisconnectLambdaVersionz7BI6iCZV16G9MAwrL9f3OuZiMXP52OkCucwtPEBvM": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketDisconnectLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "WebsocketActionLambdaVersionxPqAAtjVflK1e6zHwEX6oSSx49XzmnYoIdhcewDPpI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "WebsocketActionLambdaFunction"
+              },
+              "CodeSha256": "hJXUwdG6nKeWYscW9p8whMHht/wTXpA1Qy+o2OodhK8="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-api-files",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              },
+              "Policy": ""
+            }
+          },
+          "ApiGatewayResourceFiles": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "files",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceFilesGenerateDashurlsDashpresigned": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceFiles"
+              },
+              "PathPart": "generate-urls-presigned",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceFilesData": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceFiles"
+              },
+              "PathPart": "data",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceOperation": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "operation",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceOperationCreate": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceOperation"
+              },
+              "PathPart": "create",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceOperationData": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceOperation"
+              },
+              "PathPart": "data",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceOperationDataOperationVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceOperationData"
+              },
+              "PathPart": "{operation}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodFilesGenerateDashurlsDashpresignedOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFilesGenerateDashurlsDashpresigned"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodOperationCreateOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'POST,OPTIONS'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceOperationCreate"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodOperationDataOperationVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceOperationDataOperationVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodFilesDataOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'DELETE,OPTIONS,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFilesData"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodFilesGenerateDashurlsDashpresignedPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFilesGenerateDashurlsDashpresigned"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Ref": "ApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "FilesGenerateUrlsPresignedLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "FilesGenerateUrlsPresignedLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodOperationCreatePost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceOperationCreate"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Ref": "ApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CreateOperationLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "CreateOperationLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodOperationDataOperationVarGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceOperationDataOperationVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Ref": "ApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetDataResumenLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetDataResumenLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodFilesDataGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFilesData"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Ref": "ApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetDatafileLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "GetDatafileLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayMethodFilesDataDelete": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "DELETE",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceFilesData"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "COGNITO_USER_POOLS",
+              "AuthorizerId": {
+                "Ref": "ApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DeleteDatafileLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": [
+              "DeleteDatafileLambdaPermissionApiGateway"
+            ]
+          },
+          "ApiGatewayDeployment1740039237510": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodFilesGenerateDashurlsDashpresignedOptions",
+              "ApiGatewayMethodOperationCreateOptions",
+              "ApiGatewayMethodOperationDataOperationVarOptions",
+              "ApiGatewayMethodFilesDataOptions",
+              "ApiGatewayMethodFilesGenerateDashurlsDashpresignedPost",
+              "ApiGatewayMethodOperationCreatePost",
+              "ApiGatewayMethodOperationDataOperationVarGet",
+              "ApiGatewayMethodFilesDataGet",
+              "ApiGatewayMethodFilesDataDelete"
+            ]
+          },
+          "FilesGenerateUrlsPresignedLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "FilesGenerateUrlsPresignedLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateOperationLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateOperationLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetDataResumenLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetDataResumenLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetDatafileLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetDatafileLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DeleteDatafileLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DeleteDatafileLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketsApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-api-files-websockets",
+              "RouteSelectionExpression": "$request.body.action",
+              "Description": "Serverless Websockets",
+              "ProtocolType": "WEBSOCKET"
+            }
+          },
+          "WebsocketConnectWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketConnectLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketDisconnectWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketDisconnectLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketActionWebsocketsIntegration": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "WebsocketActionLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketConnectLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketConnectLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketConnectLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketDisconnectLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketDisconnectLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketDisconnectLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "WebsocketActionLambdaPermissionWebsockets": {
+            "Type": "AWS::Lambda::Permission",
+            "DependsOn": [
+              "WebsocketsApi",
+              "WebsocketActionLambdaFunction"
+            ],
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "WebsocketActionLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com"
+            }
+          },
+          "SconnectWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "$connect",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketConnectWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "SdisconnectWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "$disconnect",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketDisconnectWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "actionWebsocketsRoute": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "RouteKey": "action",
+              "AuthorizationType": "NONE",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "WebsocketActionWebsocketsIntegration"
+                    }
+                  ]
+                ]
+              }
+            }
+          },
+          "WebsocketsDeploymentStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "StageName": "dev",
+              "Description": "Serverless Websockets",
+              "DeploymentId": {
+                "Ref": "WebsocketsDeployment4jPvKqrZGi7ySjSkFeX5LUhCNPJE9KZoMGkJRgJc"
+              }
+            }
+          },
+          "WebsocketsDeployment4jPvKqrZGi7ySjSkFeX5LUhCNPJE9KZoMGkJRgJc": {
+            "Type": "AWS::ApiGatewayV2::Deployment",
+            "DependsOn": [
+              "SconnectWebsocketsRoute",
+              "SdisconnectWebsocketsRoute",
+              "actionWebsocketsRoute"
+            ],
+            "Properties": {
+              "ApiId": {
+                "Ref": "WebsocketsApi"
+              },
+              "Description": "Serverless Websockets"
+            }
+          },
+          "ApiGatewayAuthorizer": {
+            "Type": "AWS::ApiGateway::Authorizer",
+            "Properties": {
+              "Name": "CognitoAuthorizer",
+              "Type": "COGNITO_USER_POOLS",
+              "IdentitySource": "method.request.header.Authorization",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ProviderARNs": [
+                "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA"
+              ]
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-fc42d280-4dc0",
+            "Export": {
+              "Name": "sls-api-files-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "FilesGenerateUrlsPresignedLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "FilesGenerateUrlsPresignedLambdaVersionkWQdmh0tzMsN8RQnPr2gvxIzWbw7J6FWrh3qeS6Y"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-FilesGenerateUrlsPresignedLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateOperationLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateOperationLambdaVersionztnIPOgftIJiIUC6dlmdgiQ7p1pXMGaUOLkHshZ4QWs"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-CreateOperationLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetDataResumenLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetDataResumenLambdaVersionM1vTUc3z5MLiX575kl0Ri76liwjVxRNhDBCH5cn0aqY"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-GetDataResumenLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetDatafileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetDatafileLambdaVersion7VptbZKksk17AjiwODBxtVmEpJXA4U2eFMSrfSnZU"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-GetDatafileLambdaFunctionQualifiedArn"
+            }
+          },
+          "DeleteDatafileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteDatafileLambdaVersionoRcsQYVyyFOeKnIcjxDHHtQC1WaNhYqb1vU9cPP4Eg"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-DeleteDatafileLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketConnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketConnectLambdaVersionE6D6Xildmr1oPALhKUCo14t4yswdkKAnhT8DSjeCo"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-WebsocketConnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketDisconnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketDisconnectLambdaVersionz7BI6iCZV16G9MAwrL9f3OuZiMXP52OkCucwtPEBvM"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-WebsocketDisconnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "WebsocketActionLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "WebsocketActionLambdaVersionxPqAAtjVflK1e6zHwEX6oSSx49XzmnYoIdhcewDPpI"
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-WebsocketActionLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-ServiceEndpoint"
+            }
+          },
+          "ServiceEndpointWebsocket": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "wss://",
+                  {
+                    "Ref": "WebsocketsApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-api-files-dev-ServiceEndpointWebsocket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "pluginsData": {},
+    "functions": {
+      "filesGenerateUrlsPresigned": {
+        "handler": "lambda_generar_urls/handler.handler_function",
+        "events": [
+          {
+            "http": {
+              "path": "files/generate-urls-presigned",
+              "method": "post",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "POST",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "Authorization",
+                  "X-Amz-Date",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Ref": "ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": []
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "api-files-dev-filesGenerateUrlsPresigned",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "FilesGenerateUrlsPresignedLambdaVersionkWQdmh0tzMsN8RQnPr2gvxIzWbw7J6FWrh3qeS6Y"
+      },
+      "createOperation": {
+        "handler": "lambda_create_operacion/handler.handler_function",
+        "events": [
+          {
+            "http": {
+              "path": "operation/create",
+              "method": "post",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "POST",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "Authorization",
+                  "X-Amz-Date",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Ref": "ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": []
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "api-files-dev-createOperation",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "CreateOperationLambdaVersionztnIPOgftIJiIUC6dlmdgiQ7p1pXMGaUOLkHshZ4QWs"
+      },
+      "getDataResumen": {
+        "handler": "lambda_get_data_resumen/handler.handler_function",
+        "events": [
+          {
+            "http": {
+              "path": "operation/data/{operation}",
+              "method": "get",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "GET",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "Authorization",
+                  "X-Amz-Date",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Ref": "ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": []
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "api-files-dev-getDataResumen",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "GetDataResumenLambdaVersionM1vTUc3z5MLiX575kl0Ri76liwjVxRNhDBCH5cn0aqY"
+      },
+      "getDatafile": {
+        "handler": "lambda_get_data_file/handler.handler_function",
+        "events": [
+          {
+            "http": {
+              "path": "files/data",
+              "method": "get",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "GET",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "Authorization",
+                  "X-Amz-Date",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Ref": "ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": []
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "api-files-dev-getDatafile",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "GetDatafileLambdaVersion7VptbZKksk17AjiwODBxtVmEpJXA4U2eFMSrfSnZU"
+      },
+      "deleteDatafile": {
+        "handler": "lambda_delete_data_file/handler.handler_function",
+        "events": [
+          {
+            "http": {
+              "path": "files/data",
+              "method": "delete",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "DELETE",
+                  "OPTIONS"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "Authorization",
+                  "X-Amz-Date",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "type": "COGNITO_USER_POOLS",
+                "managedExternally": false,
+                "authorizerId": {
+                  "Ref": "ApiGatewayAuthorizer"
+                },
+                "resultTtlInSeconds": 300,
+                "identitySource": "method.request.header.Authorization",
+                "claims": []
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "api-files-dev-deleteDatafile",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "DeleteDatafileLambdaVersionoRcsQYVyyFOeKnIcjxDHHtQC1WaNhYqb1vU9cPP4Eg"
+      },
+      "websocketConnect": {
+        "handler": "lambda_web_socket/handler.connect_handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "$connect"
+            }
+          }
+        ],
+        "name": "api-files-dev-websocketConnect",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "WebsocketConnectLambdaVersionE6D6Xildmr1oPALhKUCo14t4yswdkKAnhT8DSjeCo"
+      },
+      "websocketDisconnect": {
+        "handler": "lambda_web_socket/handler.disconnect_handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "$disconnect"
+            }
+          }
+        ],
+        "name": "api-files-dev-websocketDisconnect",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "WebsocketDisconnectLambdaVersionz7BI6iCZV16G9MAwrL9f3OuZiMXP52OkCucwtPEBvM"
+      },
+      "websocketAction": {
+        "handler": "lambda_web_socket/handler.action_handler",
+        "events": [
+          {
+            "websocket": {
+              "route": "action"
+            }
+          }
+        ],
+        "name": "api-files-dev-websocketAction",
+        "package": {},
+        "memory": 1024,
+        "timeout": 29,
+        "runtime": "python3.12",
+        "vpc": {},
+        "versionLogicalId": "WebsocketActionLambdaVersionxPqAAtjVflK1e6zHwEX6oSSx49XzmnYoIdhcewDPpI"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "ApiGatewayAuthorizer": {
+          "Type": "AWS::ApiGateway::Authorizer",
+          "Properties": {
+            "Name": "CognitoAuthorizer",
+            "Type": "COGNITO_USER_POOLS",
+            "IdentitySource": "method.request.header.Authorization",
+            "RestApiId": {
+              "Ref": "ApiGatewayRestApi"
+            },
+            "ProviderARNs": [
+              "arn:aws:cognito-idp:us-east-1:911167883849:userpool/us-east-1_LhY2JulLA"
+            ]
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless",
+    "initialServerlessConfig": {
+      "service": "api-files",
+      "org": "jhimydelgado",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "appId": null,
+    "org": "jhimydelgado",
+    "orgId": null,
+    "layers": {},
+    "artifact": "/home/jhimy/proyects/proyecto1/.serverless/api-files.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/api-files/dev/1740039249926-2025-02-20T08:14:09.926Z",
+    "artifact": "api-files.zip"
+  }
+}
